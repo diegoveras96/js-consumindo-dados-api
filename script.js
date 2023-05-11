@@ -1,12 +1,24 @@
-var cep = 22743311;
-var consultaCep = fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    .then(resposta => resposta.json())
-    .then(r => {
-        if (r.erro){
-            throw Error('esse cep não existe')
-        } else{
-            console.log(r);
+let cep = document.querySelector('#cep');
+
+
+
+
+async function buscaEndereco(cep){
+    try{
+        var consultaCep = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        var consultaCepConvertida = await consultaCep.json();
+        if (consultaCepConvertida.erro){
+            throw Error('CEP não existente');
         }
-    })
-    .catch(erro => console.log(erro))
-    .finally( () => console.log('Processamento Concluído'))
+        console.log(consultaCepConvertida);
+        return consultaCepConvertida
+    } catch (erro) {
+        console.log(erro);
+    }
+}
+
+let ceps = ['22743311', '01001000', '22743312', '22743310', '22743315'];
+let conjuntoCeps = ceps.map(valores => buscaEndereco(valores));
+console.log(conjuntoCeps);
+Promise.all(conjuntoCeps).then(respostas => console.log(respostas));
+
